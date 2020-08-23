@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\v1;
 
-use App\Models\Project;
+use App\Models\Task;
 use Illuminate\Http\Request;
 
-class ProjectController extends Controller
+class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +41,10 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Project  $project
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show(Task $task)
     {
         //
     }
@@ -52,10 +52,10 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Project  $project
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function edit(Project $project)
+    public function edit(Task $task)
     {
         //
     }
@@ -64,10 +64,10 @@ class ProjectController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Project  $project
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Project $project)
+    public function update(Request $request, Task $task)
     {
         //
     }
@@ -75,10 +75,10 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Project  $project
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Project $project)
+    public function destroy(Task $task)
     {
         //
     }
