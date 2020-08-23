@@ -39,7 +39,7 @@
 | 3 | Создание репозитория, экспорт на github   | 5 |
 | 4 | Создание миграций, фабрик, сидеров | 15 |
 | 5 | Авторизация (регистрация пользователя, получение токена) | 240 |
-| 6 | Списки задач (проекты) (создание, изменение, редактирование)
+| 6 | Списки задач (проекты) (создание, изменение, редактирование) | 300 |
 | 7 | Задачи (создание, изменение, редактирование)
 | 8 | Отношения (пользователи, проекты, задачи)
 | 9 | Фильрация и вывод
@@ -153,3 +153,21 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTe
     }
 }
 ```
+
+#### Добавление проекта (список задач)
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_add_project ./tests/Feature/UserTest.php
+```
+![добавить проект](./public/img/project-add.png)
+
+#### Обновление проекта
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_update_project ./tests/Feature/UserTest.php
+```
+![обновить проект](./public/img/project-update.png)
+
+#### Удаление проекта
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project ./tests/Feature/UserTest.php
+```
+![удалить проект](./public/img/project-del.png)

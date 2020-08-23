@@ -40,5 +40,18 @@ Route::middleware('auth:api')->group(function(){
 
     });
 
+    Route::prefix('/projects')->group(function () {
+        // Информация по пользователю
+        Route::post('/', 'Api\v1\ProjectController@store')->name('api.projects.add');
+        Route::get('/', 'Api\v1\ProjectController@index')->name('api.projects.index');
+        Route::get('/{id}/', 'Api\v1\ProjectController@show')->name('api.projects.show');
+
+        Route::patch('/{id}/', 'Api\v1\ProjectController@update')->name('api.projects.update');
+        Route::delete('/{id}/', 'Api\v1\ProjectController@destroy')->name('api.projects.destroy');
+
+
+    });
+
+
 
 });
