@@ -32,13 +32,13 @@
 
 ### Планирование проекта
 
-| № п./п. | Задачи  | Время выполнения|
+| № п./п. | Задачи  | Время выполнения (мин.)|
 | ------------- | ------------- | ------------- |
-| 1 | Планирование проекта (задачи проекта, структура таблиц)  | 30  |
+| 1 | Планирование проекта (задачи проекта, структура таблиц)  | 30 |
 | 2 | Подготовка рабочей среды (конфигурация apache, создание бд, создание проекта, настройка id)  | 25 |
 | 3 | Создание репозитория, экспорт на github   | 5 |
-| 4 | Создание миграций, фабрик, сидеров
-| 5 | Авторизация (регистрация пользователя, получение токена)
+| 4 | Создание миграций, фабрик, сидеров | 15 |
+| 5 | Авторизация (регистрация пользователя, получение токена) | 240 |
 | 6 | Списки задач (проекты) (создание, изменение, редактирование)
 | 7 | Задачи (создание, изменение, редактирование)
 | 8 | Отношения (пользователи, проекты, задачи)
@@ -46,8 +46,110 @@
 | 10 | Поиск и ElasticSearch (индексация/поиск/удаление)
 | 11 | Описание проекта в Readme
 
-### Установка
 
-composer install
-php artisan migrate
-php artisan passport:install
+## Installation
+#### 1. Git Clone
+```sh
+$ git clone https://github.com/evgeniizab/laravel.mytm.git
+$ cd laravel.mytm
+$ composer install
+```
+#### 2. Database
+
+Copy .env.example to .env
+```sh
+$ cp .env.example .env
+```
+Edit .env
+```sh
+DB_CONNECTION=mysql
+DB_HOST=XXXX
+DB_PORT=3306
+DB_DATABASE=XXXX
+DB_USERNAME=XXXX
+DB_PASSWORD=XXXX
+```
+Create the database before run artisan command.
+```sh
+$ php artisan migrate
+```
+Generate your application encryption key:
+```sh
+$ php artisan key:generate
+```
+Run the commands necessary to prepare Passport for use:
+```sh
+$ php artisan passport:install
+```
+
+
+#### 3. Run tests (27 tests)
+```sh
+$ ./vendor/bin/phpunit 
+```
+
+#### 4. Работа с приложением через Postman
+```sh
+Для начала необходимо обнулить базу и выполнить migrate --seed
+$ php artisan db:wipe
+$ php artisan migrate --seed
+```
+Use: a@a.ru 12345678
+
+
+#### Регистрация
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_signup ./tests/Feature/UserTest.php
+```
+Для регистрации пользователя необходимо выполнить POST запрос с параметрами: 
+name, email, password, password_c по адресу /api/v1/signup
+
+![регистрация](./public/img/signup.png)
+
+Если ввели существующий email:
+
+```
+{
+    "data": {
+        "errors": {
+            "code": 422,
+            "title": "The user can't be created",
+            "detail": "The user with this email is already exists"
+        }
+    }
+}
+```
+#### Авторизация
+Для авторизации необходимо выполнить POST запрос с параметрами:email, password по адресу /api/v1/signin
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_signin ./tests/Feature/UserTest.php
+```
+![регистрация](./public/img/signin.png)
+
+Если логин или пароль не верный то получим:
+```
+{
+    "data": {
+        "type": "user",
+        "status": "error",
+        "attributes": "Unauthorized Access"
+    }
+}
+```
+#### Выход из системы
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTest.php
+```
+![регистрация](./public/img/signout.png)
+
+Если не передали верный токен
+
+```
+{
+    "errors": {
+        "code": 403,
+        "title": "User not auth",
+        "detail": "Route only for auth users"
+    }
+}
+```
