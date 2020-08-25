@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Exceptions\Filter;
 use App\Exceptions\UserIsAlreadyExists;
 use App\Exceptions\UserNotSignUp;
+use App\Filters\ProjectFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SignInRequest;
+use App\Http\Resources\ProjectResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Http\Requests\SignUpRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection as AnonymousResourceCollectionAlias;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -75,8 +80,6 @@ class UserController extends Controller
 
         if (auth()->attempt($credentials)) {
             $user = Auth::user();
-
-
             $token['token'] = $this->getUserToken($user, "MyToken");
             $response = self::HTTP_OK;
             return $this->getResponse("authorized", $token, $response, $user->id);
@@ -84,7 +87,7 @@ class UserController extends Controller
         else {
             $error = "Unauthorized Access";
             $response = self::HTTP_UNAUTHORIZED;
-            return $this->getResponse( "error", $error, $response );
+            return $this->getResponse( "error", $error, $response);
         }
 
     }
@@ -110,7 +113,7 @@ class UserController extends Controller
                         'message' => 'You are successfully signout'
                     ],
                     'links' => [
-                        'self' => route('api.users.signout'),
+                        'self' => route('users.signout'),
                     ]
                 ]
             ]);
@@ -152,7 +155,7 @@ class UserController extends Controller
 
                 ],
                 'links' => [
-                    'self' => route('api.users.read.id', $id),
+                    'self' => route('users.show', $id),
                 ]];
         } else {
             $data = [
@@ -167,22 +170,46 @@ class UserController extends Controller
         return response()->json($data, $response);
     }
 
+    public function info() {
+        $user = auth()->user();
+        return new UserResource($user);
+
+
+    }
+
 
     /**
-     * Если не авторизованы
+     * Информация по всем пользователям
      *
-     * @return \Illuminate\Http\JsonResponse
+     * (get) /users/
+     *
+     * @param ProjectFilter $filters
+     * @return AnonymousResourceCollectionAlias
+     * @throws Filter
      */
-    public function noAuth() {
-        $data = [
-            'errors' => [
-                'code' => 403,
-                'title' => 'User not auth',
-                'detail' => 'Route only for auth users',
-            ]
-        ];
+    public function index(ProjectFilter $filters)
+    {
+        $paginate = $filters->getPaginate();
 
-        return response()->json($data, 403);
+        try { $users = User::filter($filters)->paginate($paginate); } catch (QueryException $exception) {
+            throw new Filter();
+        }
+
+        return UserResource::collection($users);
+
+    }
+
+    public function show($id)
+    {
+        $user = User::findOrfail($id);
+        return new UserResource($user);
+    }
+
+    public function infoUser()
+    {
+
+        $user = auth()->user();
+        return new UserResource($user);
     }
 
 
