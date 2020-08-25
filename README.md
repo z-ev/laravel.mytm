@@ -33,7 +33,7 @@
 * [Планирование проекта](#plan)
 * [Установка и настройка](#setup)
 * [Тестирование](#test)
-* [Работа с приложением (#test "Heading link")](#work)
+* [Работа с приложением](#work)
 * [Пользователи ](#users) 
     * [Регистрация пользователя ](#signup) 
     * [Авторизация пользователя (получение токена) ](#signin)
@@ -43,10 +43,14 @@
     * [Добавление проекта (список задач) ](#addproject)
     * [Обновление проекта ](#update)
     * [Удаление проекта ](#projectdel)
+    * [Информация по задаче ](#projectinfo)
+    * [Список проектов](#projectsall)
 * [Задачи ](#tasks)
     * [Добавление задачи ](#addtask)
     * [Обновление задачи ](#updatetask)
     * [Удаление задачи ](#deltest)
+    * [Информация по задаче ](#taskinfo)
+    * [Список задач](#tasksall)
 * [Фильтры ](#filters)
     * [Пользователи ](#filterusers)
     * [Проекты ](#filterprojects)
@@ -56,7 +60,13 @@
     * [Поиск с фильтрами ](#elserch)
     * [Удаление документов ](#killsearch)
 
-## Планирование проекта
+## Планирование проекта <a id="plan"></a>
+**Старт работы над проектом:** 23.08.2020
+
+**Завершение работы над проектом:** 25.08.2020
+
+**Затраченное время:**
+ 
 | № п./п. | Задачи  | Время выполнения (мин.)|
 | ------------- | ------------- | ------------- |
 | 1 | Планирование проекта (задачи проекта, структура таблиц)  | 30 |
@@ -67,25 +77,21 @@
 | 6 | Списки задач (проекты) (создание, изменение, редактирование) | 300 |
 | 7 | Задачи (создание, изменение, редактирование) | 60 |
 | 8 | Отношения (пользователи, проекты, задачи) | 15 |
-| 9 | Фильрация и вывод | 180 |
+| 9 | Фильтры | 180 |
 | 10 | Поиск и ElasticSearch (индексация/поиск/удаление) | 480 |
-| 11 | Описание проекта в Readme
+| 11 | Описание проекта в Readme | 120 |
  
-Старт работы над проектом: 23.08.2020
 
-Завершение работы над проектом: 25.08.2020
 
-Затраченное время: 
+## Установка и настройка <a id="setup"></a>
 
-## Установка и настройка
-
-### 1. Git Clone
+### 1. Клонируем репозиций
 ```sh
 $ git clone https://github.com/evgeniizab/laravel.mytm.git
 $ cd laravel.mytm
 $ composer install
 ```
-### 2. Database
+### 2. Настраиваем базу данных
 
 Copy .env.example to .env
 ```sh
@@ -117,31 +123,45 @@ $ php artisan passport:install
 ```
 
 
-## 3. Run tests (16 tests) <a id="test"></a>
-```sh
+## 3. Run tests (21 tests) <a id="test"></a>
+```
 $ ./vendor/bin/phpunit 
 ```
 
-## 4. Работа с приложением через Postman
-```sh
-Для начала необходимо обнулить базу и выполнить migrate --seed
+## Работа с приложением через Postman <a id="work"></a>
+Для начала работы необходимо обнулить базу и выполнить следующие команды:
+```
 $ php artisan db:wipe
 $ php artisan migrate --seed
 $ php artisan passport:install
 ```
-Use: a@a.ru 12345678
 
+## Пользователи <a id="users"></a>
+### Регистрация пользователя <a id="signup"></a>
+| Параметры | 
+| ------------- | 
+| name |
+| email | 
+| password |
+| password_c |
+```
+POST: /api/v1/signup
+```
+Тестирование:
 
-## Регистрация
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_signup ./tests/Feature/UserTest.php
 ```
-Для регистрации пользователя необходимо выполнить POST запрос с параметрами: 
-name, email, password, password_c по адресу /api/v1/signup
+Полученный токен используем для авторизация:
+
+| OAuth 2.0 |
+| ------------- | 
+| Access Token = токен |
+| Header Prefix = Bearer |
 
 ![регистрация](./public/img/signup.png)
 
-Если ввели существующий email:
+Если ввели не существующий email:
 
 ```
 {
@@ -154,37 +174,42 @@ name, email, password, password_c по адресу /api/v1/signup
     }
 }
 ```
-## Авторизация
-Для авторизации необходимо выполнить POST запрос с параметрами:email, password по адресу /api/v1/signin
+### Авторизация пользователя <a id="signin"></a>
+| Параметры | 
+| ------------- | 
+| email | 
+| password |
+```
+POST: /api/v1/signin
+```
+Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_signin ./tests/Feature/UserTest.php
 ```
 ![регистрация](./public/img/signin.png)
 
-Если логин или пароль не верный то получим:
-```
-{
-    "data": {
-        "type": "user",
-        "status": "error",
-        "attributes": "Unauthorized Access"
-    }
-}
 ```
 
-Информация о пользователе
-
+### Получение информации о текущем пользователе  <a id="info"></a>
+```
+GET: /api/v1/info
+```
+Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_get_info ./tests/Feature/UserTest.php
 ```
 
-## Выход из системы
+### Выход из системы (смена токена) <a id="signout"></a>
+```
+GET: /api/v1/signout
+```
+Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTest.php
 ```
 ![регистрация](./public/img/signout.png)
 
-Если не передали верный токен
+Если не передали верный токен:
 
 ```
 {
@@ -195,19 +220,21 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTe
     }
 }
 ```
-#### Проекты 
+## Проекты  <a id="signup"></a>
 | Параметры | Описание |
 | ------------- | ------------- | 
 | title | Название проекта. От 5 до 300 символов (обязательное поле)
 | body |    Описание проекта. От 10 до 800 символов.
 | deadline | Планируемая дата завершения проекта. Пример: 2020-08-24 16:39:12
-| status | Статус проекта. Доступен только при обновлении проекта. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
+| status | Статус проекта. Доступен только при изменении проекта. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
 
-
-#### Добавление проекта (список задач)
-(post) /api/v1/projects
+### Добавление проекта (список задач)  <a id="addproject"></a>
 ```
-TEST$ ./vendor/bin/phpunit --filter test_user_can_add_project ./tests/Feature/UserTest.php
+POST: /api/v1/projects
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_add_project ./tests/Feature/ProjectTest.php
 ```
 | Параметры | 
 | ------------- | 
@@ -216,45 +243,35 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_add_project ./tests/Feature/Us
 | deadline |
 ![добавить проект](./public/img/project-add2.png)
 
-#### Обновление проекта
-(patch) /api/v1/projects/{project_id}
+### Обновление проекта  <a id="signup"></a>
 ```
-TEST$ ./vendor/bin/phpunit --filter test_user_can_update_project ./tests/Feature/UserTest.php
+PATCH: /api/v1/projects/{id}
 ```
-
-![обновить проект](./public/img/projects-show.png)
-
-#### Информация по проекту
-(get) /api/v1/projects/{project_id}
-
+Тестирование:
 ```
-TEST$ ./vendor/bin/phpunit --filter test_user_can_update_project ./tests/Feature/UserTest.php
+TEST$ ./vendor/bin/phpunit --filter test_user_can_update_project ./tests/Feature/ProjectTest.php
 ```
 
 ![обновить проект](./public/img/projects-show.png)
 
-#### Информация по проектам
-(get) /api/v1/projects/
-
-| Параметры | Описание |
-| ------------- | ------------- | 
-| user_id | Название проекта. От 5 до 300 символов (обязательное поле)
-| body |    Описание проекта. От 10 до 800 символов.
-| deadline | Планируемая дата завершения проекта. Пример: 2020-08-24 16:39:12
-| status | Статус проекта. Доступен только при обновлении проекта. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
-
-      
-#### Удаление проекта
+### Удаление проекта  <a id="projectdel"></a>
 ```
-TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project ./tests/Feature/UserTest.php
+DELETE: /api/v1/projects/{id}
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project ./tests/Feature/ProjectTest.php
 ```
 ![удалить проект](./public/img/project-del.png)
 Если в проекте есть хоть одна задача, то его невозможно удалить
 
-#### Удаление проекта со всеми задачами
-(delete) /api/v1/tasks/{id}/kill
+### Удаление проекта вместе с задачами <a id="projectkill"></a>
 ```
-TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project_with_tasks ./tests/Feature/TaskTest.php
+POST: /api/v1/projects/{id}/kill
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project_with_tasks ./tests/Feature/ProjectTest.php
 ```
 Сообщение при удалении проекта со всеми задачами
 ```
@@ -268,64 +285,120 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project_with_tasks ./t
 }
 ```
 
+#### Информация по проекту  <a id="projectinfo"></a>
+```
+GET: /api/v1/projects/{project_id}
+```
+Тестирование:
+
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_view_project ./tests/Feature/ProjectTest.php
+```
+
+![обновить проект](./public/img/projects-show.png)
+
+#### Информация по проектам  <a id="projectsall"></a>
+```
+GET: /api/v1/projects
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_project ./tests/Feature/ProjectTest.php
+``` 
 
 
-### Задачи
+### Задачи  <a id="tasks"></a>
 | Параметры | Описание |
 | ------------- | ------------- | 
 | project_id | Задачу можно создать только в рамках пректа (списка) (обязательное поле)
 | title | Название проекта. От 5 до 300 символов (обязательное поле)
 | body |    Описание проекта. От 10 до 800 символов.
 | deadline | Планируемая дата завершения проекта. Пример: 2020-08-24 16:39:12
-| status | Статус проекта. Доступен только при обновлении проекта. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
+| status | Статус проекта. Доступен только при обновлении задачи. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
 
-#### Добавление задачи
-(post) /api/v1/tasks/
+### Добавление задачи  <a id="addtask"></a>
+```
+POST: /api/v1/tasks/{id}
+```
+Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_add_task ./tests/Feature/TaskTest.php
 ```
 ![удалить проект](./public/img/task-add.png)
 
-#### Обновление задачи
-(patch) /api/v1/tasks/{id}
+### Обновление задачи  <a id="updatetask"></a>
+```
+PATCH: /api/v1/tasks/{id}
+```
+Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_update_task ./tests/Feature/TaskTest.php
 ```
 ![удалить проект](./public/img/tasks-update.png)
 
-#### Удаление задачи
-(delete) /api/v1/tasks/{id}
+### Удаление задачи  <a id="deltest"></a>
+```
+DELETE: /api/v1/tasks/{id}
+```
+Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_task ./tests/Feature/TaskTest.php
 ```
+#### Информация по задаче  <a id="taskinfo"></a>
+```
+GET: /api/v1/tasks/{task_id}
+```
+Тестирование:
 
-### Фильтры
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_view_task ./tests/Feature/TaskTest.php
+```
+
+![обновить проект](./public/img/projects-show.png)
+
+#### Информация по задачам  <a id="tasksall"></a>
+```
+GET: /api/v1/tasks
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_tasks ./tests/Feature/TaskTest.php
+``` 
+
+### Фильтры  <a id="filters"></a>
+Индексация документов в Elasticsearch:
+```
+GET: /api/v1/users
+GET: /api/v1/projects
+GET: /api/v1/tasks
+```
  Параметры | Описание |
 | ------------- | ------------- | 
 | id | 
 | user_id | 
-
 | title | 
 | body | 
 | status | 
 | deadline | 
 | created_at |   
-| updated_at | обновленные от 
-
-| projects | Вместе с проектами 
-| tasks | Вместе с задачами 
-| order_by | сортировать по колонке 
+| updated_at | 
+| projects |
+| tasks | 
+| order_by |
 | order_dir | asc, desc
-| paginate |  (по умолчанию 5)
+| paginate | 
 
+Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_get_users_with_filters ./tests/Feature/UserTest.php
+TEST$ ./vendor/bin/phpunit --filter test_user_can_projects_with_filters ./tests/Feature/ProjectTest.php
+TEST$ ./vendor/bin/phpunit --filter test_user_can_tasks_with_filters ./tests/Feature/UserTest.php
 ```
-test_user_can_projects_with_filters
-test_user_can_tasks_with_filters
-
-Example
+Примeр:
+```
 http://api.ez:8088/api/v1/users?order_dir=desc&paginate=10&projects=13&tasks=3&id=1011
+```
+
 ```
 {
     "data": [
@@ -430,12 +503,41 @@ http://api.ez:8088/api/v1/users?order_dir=desc&paginate=10&projects=13&tasks=3&i
 }
 ```
 
-####Elasticserch
-Сначала ПОСТ
+##Поиск (Elasticserch)   <a id="search"></a>
+Для работы с Elasticserch необходимо настроить параметры в .env
+```
+ELASTICSEARCH_HOST=localhost
+ELASTICSEARCH_PORT=9200
+```
 
-http://api.ez:8088/api/v1/search?ser=8765&paginate=4&page=1&order_by=_id&order_dir=asc
+### Индексация документов   <a id="searchindex"></a>
+Индексация документов в Elasticsearch:
+```
+POST: /api/v1/search
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_set_es_index ./tests/Feature/ElasticTest.php
+```
+
+### Поиск с фильтрами   <a id="elserch"></a>
+Поиск с параметрами:
+```
+GET: /api/v1/search?ser=8765&paginate=4&page=1&order_by=_id&order_dir=asc
+```
+Тестирование:
+
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_search_with_filters ./tests/Feature/ElasticTest.php
 ```
-
 ![поиск](./public/img/ess.png)
+
+### Удаление документов  <a id="killsearch"></a>
+Удаление документов из Elasticsearch:
+```
+DELETE: /api/v1/search
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_delete_es_index ./tests/Feature/ElasticTest.php
+```
