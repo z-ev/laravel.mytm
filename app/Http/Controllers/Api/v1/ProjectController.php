@@ -7,16 +7,12 @@ use App\Exceptions\UserNotSignUp;
 use App\Filters\ProjectFilter;
 use App\Http\Requests\ProjectCreateRequest;
 use App\Http\Requests\ProjectUpdateRequest;
-
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
-
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
-
-
 
 
 class ProjectController extends Controller
@@ -27,16 +23,21 @@ class ProjectController extends Controller
      *
      * (get) /projects/
      *
-     * @param ProjectFilterRequest $request
      * @param ProjectFilter $filters
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      * @throws Filter
      */
     public function index(ProjectFilter $filters)
     {
+
         $paginate = $filters->getPaginate();
 
-        try { $projects = Project::filter($filters)->paginate($paginate); } catch (QueryException $exception) {
+        try {
+
+            $projects = Project::filter($filters)->paginate($paginate);
+
+        } catch (QueryException $exception) {
+
             throw new Filter();
         }
 
@@ -55,6 +56,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectCreateRequest $request)
     {
+
         $project = new Project();
 
         $title = request('title');
@@ -80,6 +82,7 @@ class ProjectController extends Controller
         $project->save();
 
         return new ProjectResource($project);
+
     }
 
 
@@ -93,7 +96,9 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
+
         return new ProjectResource($project);
+
     }
 
 
@@ -109,23 +114,33 @@ class ProjectController extends Controller
      */
     public function update(ProjectUpdateRequest $request, $id)
     {
+
         $project = Project::findOrFail($id);
 
             if (isset($request['title'])) {
+
                 $project->title = $request['title'];
             }
 
             if (isset($request['body'])) {
+
                 $project->body = $request['body'];
             }
 
             if (isset($request['status'])) {
+
                 $project->status = $request['status'];
             }
 
             if (isset($request['deadline'])) {
+
                 $project->deadline = Carbon::parse($request['deadline']);
-            } else $project->deadline = Carbon::parse('2020-08-23 16:53:23');
+
+            } else {
+
+                $project->deadline = Carbon::parse('2020-08-23 16:53:23');
+
+            }
 
             $project->save;
 
@@ -147,16 +162,21 @@ class ProjectController extends Controller
     {
 
         if (!$project) {
+
            $error = 'Такого проекта не существует';
+
         }
 
         if ($project->user_id != auth()->user()->id) {
+
             $error = 'У вас нет прав для удаления проекта';
+
         } else {
 
             $tasks = Task::where('project_id', $project->id)->first();
 
             if ($tasks) {
+
                 $error = 'Не возможно удалить проект та как по нему поставлены задачи';
             }
 
@@ -169,16 +189,20 @@ class ProjectController extends Controller
         } else {
 
             $project->delete();
+
             return response()->json([
+
                 'data'=>[
                     'message'=>'Проект успешно удален!'
                 ],
                 'links' => [
-                'self' => route('projects.index'),
+                'self' => route('projects.index')
                 ]
+
             ],200);
 
         }
+
     }
 
 
@@ -193,11 +217,20 @@ class ProjectController extends Controller
      */
     public function kill($id)
     {
+
         $project = Project::findOrFail($id);
 
-        if (!$project) {$error = 'Такого проекта не существует';}
-        if ($project->user_id != auth()->user()->id) { $error = 'У вас нет прав для удаления проекта';}
+        if (!$project) {
 
+            $error = 'Такого проекта не существует';
+
+        }
+
+        if ($project->user_id != auth()->user()->id) {
+
+            $error = 'У вас нет прав для удаления проекта';
+
+        }
 
         if (isset($error)) {
 
@@ -215,34 +248,17 @@ class ProjectController extends Controller
                 $this->Destroy($project);
             }
 
-            return response()->json(['data'=>['message'=>'Проект успешно удален вместо со всеми задачами!'],'links' => [
-                'self' => route('projects.index'),
-            ]],200);
+            return response()->json([
+
+                'data' => [
+                    'message' => 'Проект успешно удален вместо со всеми задачами!'
+                ],
+                'links' => [
+                    'self' => route('projects.index'),
+                    ]
+                ],200);
 
         }
-
-    }
-
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Project $project)
-    {
-
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
 
     }
 

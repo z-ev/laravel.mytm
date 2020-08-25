@@ -14,15 +14,15 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
+
             'data' => [
                 'type' => 'users',
                 'id' => $this->id,
                 'attributes' => [
                     'name' => $this->name,
                     'email' => $this->email,
-               //     'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-                //    'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
                     'projects' => ProjectResource::collection($this->whenLoaded('projects')),
                     'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
                 ],
@@ -31,6 +31,10 @@ class UserResource extends JsonResource
             'links' => [
                 'self' => route('users.show', $this->id),
             ]
+
         ];
+
     }
+
+
 }
