@@ -12,6 +12,6 @@ $factory->define(Project::class, function (Faker $faker) {
         'status' => '1',
         'title' => $faker->sentence,
         'body' => $faker->paragraph,
-        'deadline' => now(),
+        'deadline' => now()->format('Y-m-d H:i:s'),
     ];
 });

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectResource extends JsonResource
+class TaskResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,7 @@ class ProjectResource extends JsonResource
     {
         return [
             'data' => [
-                'type' => 'project',
+                'type' => 'task',
                 'id' => $this->id,
                 'attributes' => [
                     'status' => $this->status,
@@ -29,18 +29,25 @@ class ProjectResource extends JsonResource
                 'relationships' => [
                     'user' => [
                         'data' => [
-                            'type' => 'user',
                             'user_id' => $this->user_id,
                         ],
                         'links' => [
-                            'self' => route('users.show', $this->user_id)
+                            'self' => route('users.show', $this->user_id),
                         ]
+                    ],
+                    'project' => [
+                        'data' => [
+                            'project_id' => $this->project_id,
+                        ],
+                        'links' => [
+                            'self' => route('projects.show', $this->project_id),
+                        ]
+
                     ]
-                ],
-                'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
-                'links' => [
-                    'self' => route('projects.show', $this->id),
                 ]
+            ],
+            'links' => [
+                'self' => route('tasks.show', $this->id),
             ]
         ];
     }

@@ -16,7 +16,15 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route('api.users.signin.noauth');
+            $data = [
+                'errors' => [
+                    'code' => 403,
+                    'title' => 'User not auth',
+                    'detail' => 'Route only for auth users',
+                ]
+            ];
+
+            return response()->json($data, 403);
         }
 
     }
