@@ -1,4 +1,4 @@
-# Laravel MyTaskManager
+# Laravel Task Manager
 ## Техническое задание
 **Описание задачи:**
 
@@ -36,8 +36,10 @@
 * [Работа с приложением](#work)
 * [Пользователи ](#users) 
     * [Регистрация пользователя ](#signup) 
-    * [Авторизация пользователя (получение токена) ](#signin)
-    * [Получение информации о текущем пользователе ](#userinfo)
+    * [Авторизация пользователя (получение токена) ](#usersignin)
+    * [Получение информации о текущем пользователе ](#getuserinfo)
+    * [Изменение информации о пользователе ](#patchuserinfo)
+    * [Удаление пользователя](#deluserinfo)
     * [Выход из системы (смена токена) ](#sistemsignout)
 * [Проекты ](#projets)
     * [Добавление проекта (список задач) ](#addproject)
@@ -93,11 +95,11 @@ $ composer install
 ```
 ### 2. Настраиваем базу данных
 
-Copy .env.example to .env
+Копируем .env.example в .env
 ```sh
 $ cp .env.example .env
 ```
-Edit .env
+Редактируем .env
 ```sh
 DB_CONNECTION=mysql
 DB_HOST=XXXX
@@ -109,21 +111,21 @@ DB_PASSWORD=XXXX
 ELASTICSEARCH_HOST=localhost
 ELASTICSEARCH_PORT=9200
 ```
-Create the database before run artisan command.
+Создаем таблицы в БД
 ```sh
 $ php artisan migrate
 ```
-Generate your application encryption key:
+Генерируем ключ
 ```sh
 $ php artisan key:generate
 ```
-Run the commands necessary to prepare Passport for use:
+Подготавливаем passport
 ```sh
 $ php artisan passport:install
 ```
 
 
-## 3. Тестирование (21 tests) <a id="test"></a>
+## 3. Тестирование (23 теста) <a id="test"></a>
 ```
 $ ./vendor/bin/phpunit 
 ```
@@ -174,7 +176,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signup ./tests/Feature/UserTes
     }
 }
 ```
-### Авторизация пользователя <a id="signin"></a>
+### Авторизация пользователя <a id="usersignin"></a>
 | Параметры | 
 | ------------- | 
 | email | 
@@ -188,13 +190,39 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signin ./tests/Feature/UserTes
 ```
 ![регистрация](./public/img/signin.png)
 
-### Получение информации о текущем пользователе  <a id="userinfo"></a>
+### Получение информации о текущем пользователе <a id="getuserinfo"></a>
 ```
-GET: /api/v1/info
+GET: /api/v1/info/
 ```
 Тестирование:
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_get_info ./tests/Feature/UserTest.php
+```
+### Изменение информации пользователя <a id="patchuserinfo"></a>
+| Параметры | 
+| ------------- | 
+| name | 
+| email |
+| password |
+| password_c |
+| old_password |
+```
+PATCH: /api/v1/users/{user_id}
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_update ./tests/Feature/UserTest.php
+```
+
+
+### Удаление пользователя <a id="deluserinfo"></a>
+Внимание, удалить можно только своего пользователя, который в данный момент авторизован.
+```
+DELETE: /api/v1/users/{user_id}
+```
+Тестирование:
+```
+TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy ./tests/Feature/UserTest.php
 ```
 
 ### Выход из системы (смена токена) <a id="sistemsignout"></a>
@@ -218,7 +246,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTe
     }
 }
 ```
-## Проекты  <a id="signup"></a>
+## Проекты <a id="signup"></a>
 | Параметры | Описание |
 | ------------- | ------------- | 
 | title | Название проекта. От 5 до 300 символов (обязательное поле)
@@ -226,7 +254,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTe
 | deadline | Планируемая дата завершения проекта. Пример: 2020-08-24 16:39:12
 | status | Статус проекта. Доступен только при изменении проекта. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
 
-### Добавление проекта (список задач)  <a id="addproject"></a>
+### Добавление проекта (список задач) <a id="addproject"></a>
 ```
 POST: /api/v1/projects
 ```
@@ -241,7 +269,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_add_project ./tests/Feature/Pr
 | deadline |
 ![добавить проект](./public/img/project-add2.png)
 
-### Обновление проекта  <a id="signup"></a>
+### Обновление проекта <a id="signup"></a>
 ```
 PATCH: /api/v1/projects/{id}
 ```
@@ -252,7 +280,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_update_project ./tests/Feature
 
 ![обновить проект](./public/img/projects-show.png)
 
-### Удаление проекта  <a id="projectdel"></a>
+### Удаление проекта <a id="projectdel"></a>
 ```
 DELETE: /api/v1/projects/{id}
 ```
@@ -283,7 +311,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project_with_tasks ./t
 }
 ```
 
-#### Информация по проекту  <a id="projectinfo"></a>
+#### Информация по проекту <a id="projectinfo"></a>
 ```
 GET: /api/v1/projects/{project_id}
 ```
@@ -295,7 +323,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_view_project ./tests/Feature/P
 
 ![обновить проект](./public/img/projects-show.png)
 
-#### Информация по проектам  <a id="projectsall"></a>
+#### Информация по проектам <a id="projectsall"></a>
 ```
 GET: /api/v1/projects
 ```
@@ -305,7 +333,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_project ./tests/Featu
 ``` 
 
 
-### Задачи  <a id="tasks"></a>
+### Задачи <a id="tasks"></a>
 | Параметры | Описание |
 | ------------- | ------------- | 
 | project_id | Задачу можно создать только в рамках пректа (списка) (обязательное поле)
@@ -314,7 +342,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_project ./tests/Featu
 | deadline | Планируемая дата завершения проекта. Пример: 2020-08-24 16:39:12
 | status | Статус проекта. Доступен только при обновлении задачи. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
 
-### Добавление задачи  <a id="addtask"></a>
+### Добавление задачи <a id="addtask"></a>
 ```
 POST: /api/v1/tasks/{id}
 ```
@@ -324,7 +352,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_add_task ./tests/Feature/TaskT
 ```
 ![удалить проект](./public/img/task-add.png)
 
-### Обновление задачи  <a id="updatetask"></a>
+### Обновление задачи <a id="updatetask"></a>
 ```
 PATCH: /api/v1/tasks/{id}
 ```
@@ -334,7 +362,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_update_task ./tests/Feature/Ta
 ```
 ![удалить проект](./public/img/tasks-update.png)
 
-### Удаление задачи  <a id="deltest"></a>
+### Удаление задачи <a id="deltest"></a>
 ```
 DELETE: /api/v1/tasks/{id}
 ```
@@ -342,7 +370,7 @@ DELETE: /api/v1/tasks/{id}
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_task ./tests/Feature/TaskTest.php
 ```
-#### Информация по задаче  <a id="taskinfo"></a>
+#### Информация по задаче <a id="taskinfo"></a>
 ```
 GET: /api/v1/tasks/{task_id}
 ```
@@ -354,7 +382,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_view_task ./tests/Feature/Task
 
 ![обновить проект](./public/img/projects-show.png)
 
-#### Информация по задачам  <a id="tasksall"></a>
+#### Информация по задачам <a id="tasksall"></a>
 ```
 GET: /api/v1/tasks
 ```
@@ -363,7 +391,7 @@ GET: /api/v1/tasks
 TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_tasks ./tests/Feature/TaskTest.php
 ``` 
 
-### Фильтры  <a id="filters"></a>
+### Фильтры <a id="filters"></a>
 Индексация документов в Elasticsearch:
 ```
 GET: /api/v1/users
@@ -501,14 +529,14 @@ http://api.ez:8088/api/v1/users?order_dir=desc&paginate=10&projects=13&tasks=3&i
 }
 ```
 
-##Поиск (Elasticserch)   <a id="search"></a>
+##Поиск (Elasticserch) <a id="search"></a>
 Для работы с Elasticserch необходимо настроить параметры в .env
 ```
 ELASTICSEARCH_HOST=localhost
 ELASTICSEARCH_PORT=9200
 ```
 
-### Индексация документов   <a id="searchindex"></a>
+### Индексация документов <a id="searchindex"></a>
 Индексация документов в Elasticsearch:
 ```
 POST: /api/v1/search
@@ -518,7 +546,7 @@ POST: /api/v1/search
 TEST$ ./vendor/bin/phpunit --filter test_user_can_set_es_index ./tests/Feature/ElasticTest.php
 ```
 
-### Поиск с фильтрами   <a id="elserch"></a>
+### Поиск с фильтрами <a id="elserch"></a>
 Поиск с параметрами:
 ```
 GET: /api/v1/search?ser=8765&paginate=4&page=1&order_by=_id&order_dir=asc
@@ -530,7 +558,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_search_with_filters ./tests/Fe
 ```
 ![поиск](./public/img/ess.png)
 
-### Удаление документов  <a id="killsearch"></a>
+### Удаление документов <a id="killsearch"></a>
 Удаление документов из Elasticsearch:
 ```
 DELETE: /api/v1/search
