@@ -143,6 +143,8 @@ class TaskTest extends TestCase
 
     }
 
+
+
     public function test_user_can_tasks_with_filters()
     {
         $this->withoutExceptionHandling();
@@ -166,6 +168,35 @@ class TaskTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_user_can_view_all_tasks()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $project = factory(Project::class)->create(['user_id'=>$user->id]);
+        $task = factory(task::class)->create(['user_id'=>$user->id , 'project_id' => $project->id]);
+
+        $response = $this->getJson('api/v1/tasks/'.$task->id);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_user_can_view_task()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $project = factory(Project::class)->create(['user_id'=>$user->id]);
+        $task = factory(task::class)->create(['user_id'=>$user->id , 'project_id' => $project->id]);
+
+        $response = $this->getJson('api/v1/tasks');
+
+        $response->assertStatus(200);
+
+    }
 
 
 

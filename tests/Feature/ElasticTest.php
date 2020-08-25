@@ -37,4 +37,38 @@ class ElasticTest extends TestCase
 
 
     }
+
+    public function test_user_can_delete_es_index ()
+    {
+        $this->withoutExceptionHandling();
+
+        $response = $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $project = factory(Project::class)->create(['user_id' => $user->id]);
+        $task = factory(Task::class)->create(['user_id' => $user->id, 'project_id' => $project->id, 'title' => 'This is best title']);
+
+        $response = $this->deleteJson('/api/v1/search');
+        $response->assertStatus(200);
+
+
+
+
+    }
+
+    public function test_user_can_set_es_index ()
+    {
+        $this->withoutExceptionHandling();
+
+        $response = $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $project = factory(Project::class)->create(['user_id' => $user->id]);
+        $task = factory(Task::class)->create(['user_id' => $user->id, 'project_id' => $project->id, 'title' => 'This is best title']);
+
+        $response = $this->postJson('/api/v1/search');
+        $response->assertStatus(200);
+
+
+
+
+    }
 }
