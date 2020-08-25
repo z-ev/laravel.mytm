@@ -44,17 +44,9 @@ Route::middleware('auth:api')->group(function(){
      */
 
     // Информация о пользователе
-       Route::get('/info', 'Api\v1\UserController@infoUser')->name('users.info');
+    Route::get('/info', 'Api\v1\UserController@infoUser')->name('users.info');
 
-    Route::prefix('users')->group(function () {
-        // Список пользователей
-        Route::get('/', 'Api\v1\UserController@index')->name('users.index');
-        // Информация о заданном пользователе
-        Route::get('/{id}', 'Api\v1\UserController@show')->name('users.show');
-
-
-
-    });
+    Route::resource('users', 'Api\v1\UserController');
 
     Route::resource('projects', 'Api\v1\ProjectController');
 
