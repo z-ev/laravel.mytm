@@ -37,8 +37,8 @@
 * [Пользователи ](#users) 
     * [Регистрация пользователя ](#signup) 
     * [Авторизация пользователя (получение токена) ](#signin)
-    * [Получение информации о текущем пользователе ](#info)
-    * [Выход из системы (смена токена) ](#signout)
+    * [Получение информации о текущем пользователе ](#userinfo)
+    * [Выход из системы (смена токена) ](#sistemsignout)
 * [Проекты ](#projets)
     * [Добавление проекта (список задач) ](#addproject)
     * [Обновление проекта ](#update)
@@ -188,9 +188,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signin ./tests/Feature/UserTes
 ```
 ![регистрация](./public/img/signin.png)
 
-```
-
-### Получение информации о текущем пользователе  <a id="info"></a>
+### Получение информации о текущем пользователе  <a id="userinfo"></a>
 ```
 GET: /api/v1/info
 ```
@@ -199,7 +197,7 @@ GET: /api/v1/info
 TEST$ ./vendor/bin/phpunit --filter test_user_can_get_info ./tests/Feature/UserTest.php
 ```
 
-### Выход из системы (смена токена) <a id="signout"></a>
+### Выход из системы (смена токена) <a id="sistemsignout"></a>
 ```
 GET: /api/v1/signout
 ```
