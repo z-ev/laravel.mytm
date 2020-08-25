@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TaskResource extends JsonResource
 {
+
     /**
      * Transform the resource into an array.
      *
@@ -14,7 +15,9 @@ class TaskResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
+
             'data' => [
                 'type' => 'task',
                 'id' => $this->id,
@@ -49,6 +52,10 @@ class TaskResource extends JsonResource
             'links' => [
                 'self' => route('tasks.show', $this->id),
             ]
+
         ];
+
     }
+
+
 }

@@ -13,18 +13,22 @@ use Tests\TestCase;
 class ProjectTest extends TestCase
 {
     use WithFaker;
+
+
     /**
      * Добавление проекта (список задач)
      */
     public function test_user_can_add_project()
     {
         $this->withoutExceptionHandling();
+
         $response = $this->actingAs($user = factory(User::class)->create(), 'api')
             ->json('post', '/api/v1/projects',[
                 'title' => 'The Title '.$this->faker->title,
                 'body' => 'The bady '.$this->faker->paragraph,
                 'deadline' => Carbon::parse('2020-08-23 16:53:23'),
             ]);
+
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'data' => [
@@ -56,8 +60,12 @@ class ProjectTest extends TestCase
             ]);
     }
 
+    /**
+     * Меняем задачу
+     */
     public function test_user_can_update_project()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -101,8 +109,13 @@ class ProjectTest extends TestCase
 
     }
 
+
+    /**
+     * Удаляем проект
+     */
     public function  test_user_can_destroy_project()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -120,10 +133,16 @@ class ProjectTest extends TestCase
                     'self',
                 ],
             ]);
+
     }
 
+
+    /**
+     * Смотрим проекты вместе с задачами
+     */
     public function  test_user_can_destroy_project_with_tasks()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -144,8 +163,12 @@ class ProjectTest extends TestCase
     }
 
 
+    /**
+     * Смотрим проект
+     */
     public function test_user_can_view_project()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -185,9 +208,12 @@ class ProjectTest extends TestCase
             ]);
     }
 
-
+    /**
+     * Смотрим все проекты
+     */
     public function test_user_can_view_all_project()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -200,8 +226,13 @@ class ProjectTest extends TestCase
 
     }
 
+
+    /**
+     * Фильтруем проекты
+     */
     public function test_user_can_projects_with_filters()
     {
+
         $this->withoutExceptionHandling();
 
         $response = $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -220,6 +251,10 @@ class ProjectTest extends TestCase
                 'order_dir' => 'asc',
             ]
         );
+
         $response->assertStatus(200);
+
     }
+
+
 }

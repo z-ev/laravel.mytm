@@ -13,7 +13,9 @@ class TaskCreateRequest extends FormRequest
      */
     public function authorize()
     {
+
         return true;
+
     }
 
     /**
@@ -23,11 +25,15 @@ class TaskCreateRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
+
             'project_id' => 'required|integer',
             'title' => 'required|min:5|max:300',
             'body' => 'sometimes|max:800|min:10',
             'deadline' => 'sometimes|date',
+
         ];
+
     }
 }
