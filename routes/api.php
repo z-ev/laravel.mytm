@@ -14,44 +14,66 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
+    +-----------+-------------------------+------------------+-----------------------++++-------------------------+
+    | Method    | URI                     | Name             | Action                                             |
+    +-----------+-------------------------+------------------+----------------------------------------------------+
+    | GET|HEAD  | /                       |                  | Closure                                            |
+    | GET|HEAD  | projects                | projects.index   | App\Http\Controllers\Api\v1\UserController@index   |
+    | POST      | projects                | projects.store   | App\Http\Controllers\Api\v1\UserController@store   |
+    | GET|HEAD  | projects/create         | projects.create  | App\Http\Controllers\Api\v1\UserController@create  |
+    | GET|HEAD  | projects/{article}      | projects.show    | App\Http\Controllers\Api\v1\UserController@show    |
+    | PUT|PATCH | projects/{article}      | projects.update  | App\Http\Controllers\Api\v1\UserController@update  |
+    | DELETE    | projects/{article}      | projects.destroy | App\Http\Controllers\Api\v1\UserController@destroy |
+    | GET|HEAD  | projects/{article}/edit | projects.edit    | App\Http\Controllers\Api\v1\UserController@edit    |
+    +-----------+-------------------------+------------------+----------------------------------------------------+
+*/
 
-// Регистрация нового пользователя
-Route::post('signup', 'Api\v1\UserController@signUp')->name('api.users.signup');;
-Route::post('signin', 'Api\v1\UserController@signIn')->name('api.users.signin');;
-
-Route::get('signin', 'Api\v1\UserController@noAuth')->name('api.users.signin.noauth');;
+// Создать пользователя
+Route::post('signup', 'Api\v1\UserController@signUp')->name('users.signup');
+// Получить новый токен
+Route::post('signin', 'Api\v1\UserController@signIn')->name('users.signin');;
 
 Route::middleware('auth:api')->group(function(){
 
-    Route::get('signout', 'Api\v1\UserController@signOut')->name('api.users.signout');;
+    //Сменить токен
+    Route::get('signout', 'Api\v1\UserController@signOut')->name('users.signout');
 
     /**
      * Информация о всех пользователях, их проектах и задачах с пагинацией
      */
-    Route::prefix('/users')->group(function () {
+
+    // Информация о пользователе
+       Route::get('/info', 'Api\v1\UserController@infoUser')->name('users.info');
+
+    Route::prefix('users')->group(function () {
         // Список пользователей
-        Route::get('/', 'Api\v1\UserController@index')->name('api.users.read');
+        Route::get('/', 'Api\v1\UserController@index')->name('users.index');
+        // Информация о заданном пользователе
+        Route::get('/{id}', 'Api\v1\UserController@show')->name('users.show');
 
-    });
-
-    Route::prefix('/users/{id}')->group(function () {
-        // Информация по пользователю
-        Route::get('/', 'Api\v1\UserController@show')->name('api.users.read.id');
-
-    });
-
-    Route::prefix('/projects')->group(function () {
-        // Информация по пользователю
-        Route::post('/', 'Api\v1\ProjectController@store')->name('api.projects.add');
-        Route::get('/', 'Api\v1\ProjectController@index')->name('api.projects.index');
-        Route::get('/{id}/', 'Api\v1\ProjectController@show')->name('api.projects.show');
-
-        Route::patch('/{id}/', 'Api\v1\ProjectController@update')->name('api.projects.update');
-        Route::delete('/{id}/', 'Api\v1\ProjectController@destroy')->name('api.projects.destroy');
 
 
     });
 
+    Route::resource('projects', 'Api\v1\ProjectController');
 
+    Route::resource('tasks', 'Api\v1\TaskController');
+
+    Route::delete('projects/{id}/kill', 'Api\v1\ProjectController@kill');;
+
+    /**
+     * Elasticsearch
+     */
+    Route::prefix('/search')->group(function () {
+        // Поиск по ключевому слову ?ser=word...
+        Route::get('/', 'Api\v1\SearchController@find')->name('search');
+
+        // Добавление документов в Elastic
+        Route::post('/', 'Api\v1\SearchController@createIndex');
+        // Удаление документов из Elastic
+        Route::delete('/', 'Api\v1\SearchController@deleteIndex');
+
+    });
 
 });
