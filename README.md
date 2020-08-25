@@ -1,5 +1,5 @@
 # Laravel MyTaskManager
-### Техническое задание
+## Техническое задание
 **Описание задачи:**
 
 Реализовать микросервисное приложение трекера задач с управлением задачами через JSON API. Можно использовать любой из современных фреймворков.
@@ -28,10 +28,35 @@
 - Работа с БД через миграции
 - Использование ElasticSearch
 - Использовать docker-compose для сборки приложения
+## Оглавление
 
+* [Планирование проекта](#plan)
+* [Установка и настройка](#setup)
+* [Тестирование](#test)
+* [Работа с приложением (#test "Heading link")](#work)
+* [Пользователи ](#users) 
+    * [Регистрация пользователя ](#signup) 
+    * [Авторизация пользователя (получение токена) ](#signin)
+    * [Получение информации о текущем пользователе ](#info)
+    * [Выход из системы (смена токена) ](#signout)
+* [Проекты ](#projets)
+    * [Добавление проекта (список задач) ](#addproject)
+    * [Обновление проекта ](#update)
+    * [Удаление проекта ](#projectdel)
+* [Задачи ](#tasks)
+    * [Добавление задачи ](#addtask)
+    * [Обновление задачи ](#updatetask)
+    * [Удаление задачи ](#deltest)
+* [Фильтры ](#filters)
+    * [Пользователи ](#filterusers)
+    * [Проекты ](#filterprojects)
+    * [Задачи ](#filtertasks)
+* [Поиск (Elasticserch) ](#search)
+    * [Индексация документов ](#searchindex)
+    * [Поиск с фильтрами ](#elserch)
+    * [Удаление документов ](#killsearch)
 
-### Планирование проекта
-
+## Планирование проекта
 | № п./п. | Задачи  | Время выполнения (мин.)|
 | ------------- | ------------- | ------------- |
 | 1 | Планирование проекта (задачи проекта, структура таблиц)  | 30 |
@@ -44,17 +69,23 @@
 | 8 | Отношения (пользователи, проекты, задачи) | 15 |
 | 9 | Фильрация и вывод | 180 |
 | 10 | Поиск и ElasticSearch (индексация/поиск/удаление) | 480 |
-| 11 | Описание проекта в Readme 
+| 11 | Описание проекта в Readme
+ 
+Старт работы над проектом: 23.08.2020
 
+Завершение работы над проектом: 25.08.2020
 
-## Installation
-#### 1. Git Clone
+Затраченное время: 
+
+## Установка и настройка
+
+### 1. Git Clone
 ```sh
 $ git clone https://github.com/evgeniizab/laravel.mytm.git
 $ cd laravel.mytm
 $ composer install
 ```
-#### 2. Database
+### 2. Database
 
 Copy .env.example to .env
 ```sh
@@ -86,12 +117,12 @@ $ php artisan passport:install
 ```
 
 
-#### 3. Run tests (27 tests)
+## 3. Run tests (16 tests) <a id="test"></a>
 ```sh
 $ ./vendor/bin/phpunit 
 ```
 
-#### 4. Работа с приложением через Postman
+## 4. Работа с приложением через Postman
 ```sh
 Для начала необходимо обнулить базу и выполнить migrate --seed
 $ php artisan db:wipe
@@ -101,7 +132,7 @@ $ php artisan passport:install
 Use: a@a.ru 12345678
 
 
-#### Регистрация
+## Регистрация
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_signup ./tests/Feature/UserTest.php
 ```
@@ -123,7 +154,7 @@ name, email, password, password_c по адресу /api/v1/signup
     }
 }
 ```
-#### Авторизация
+## Авторизация
 Для авторизации необходимо выполнить POST запрос с параметрами:email, password по адресу /api/v1/signin
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_signin ./tests/Feature/UserTest.php
@@ -147,7 +178,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signin ./tests/Feature/UserTes
 TEST$ ./vendor/bin/phpunit --filter test_user_can_get_info ./tests/Feature/UserTest.php
 ```
 
-#### Выход из системы
+## Выход из системы
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTest.php
 ```
