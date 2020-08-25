@@ -123,12 +123,12 @@ $ php artisan passport:install
 ```
 
 
-## 3. Run tests (21 tests) <a id="test"></a>
+## 3. Тестирование (21 tests) <a id="test"></a>
 ```
 $ ./vendor/bin/phpunit 
 ```
 
-## Работа с приложением через Postman <a id="work"></a>
+## 4. Работа с приложением через Postman <a id="work"></a>
 Для начала работы необходимо обнулить базу и выполнить следующие команды:
 ```
 $ php artisan db:wipe
