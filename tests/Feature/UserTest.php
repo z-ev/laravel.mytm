@@ -6,13 +6,14 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 
 class UserTest extends TestCase
 {
+
     use WithFaker;
+
 
      /**
      * Регистрация пользователя
@@ -45,6 +46,7 @@ class UserTest extends TestCase
             ]);
     }
 
+
     /**
      * Авторизация
      */
@@ -74,6 +76,7 @@ class UserTest extends TestCase
                 ]
             ]);
     }
+
     /**
      * Выход
      */
@@ -98,15 +101,19 @@ class UserTest extends TestCase
     }
 
 
+    /**
+     * Фильтруем пользователей
+     */
     public function test_user_can_get_users_with_filters()
     {
+
         $this->withoutExceptionHandling();
 
         $response = $this->actingAs($user = factory(User::class)->create(), 'api');
 
         $project = factory(Project::class)->create(['user_id' => $user->id]);
-        $task = factory(Task::class)->create(['user_id' => $user->id, 'project_id' => $project->id]);
 
+        $task = factory(Task::class)->create(['user_id' => $user->id, 'project_id' => $project->id]);
 
         $response = $this->getJson(
             '/api/v1/users',
@@ -118,17 +125,26 @@ class UserTest extends TestCase
                 'order_dir' => 'asc',
             ]
         );
+
         $response->assertStatus(200);
+
     }
 
+    /**
+     * Получаем информацию о пользователе
+     */
     public function test_user_can_get_info()
     {
+
         $this->withoutExceptionHandling();
+
         $response = $this->actingAs($user = factory(User::class)->create(), 'api');
+
         $response = $this->getJson(
             '/api/v1/info',
 
         );
+
         $response->assertStatus(200)
         ->assertJsonStructure([
                                   "data" => [
@@ -147,22 +163,34 @@ class UserTest extends TestCase
     }
 
 
+    /**
+     * Удаляем пользователя
+     */
     public function test_user_can_destroy()
     {
         $this->withoutExceptionHandling();
+
         $response = $this->actingAs($user = factory(User::class)->create(), 'api');
+
         $response = $this->deleteJson(
             '/api/v1/users/'.$user->id);
-        $response->assertStatus(200);
 
+        $response->assertStatus(200);
 
     }
 
+    /**
+     * Меняем информациб о пользователе
+     */
     public function test_user_can_update()
     {
+
         $this->withoutExceptionHandling();
+
         $this->actingAs($user = factory(User::class)->create(), 'api');
+
         $response = $this->deleteJson(
+
             '/api/v1/users/'.$user->id, [
                 'name' => 'MyNewUserName',
                 'email' => 'myNewEmail@thetest.ru',
@@ -170,12 +198,10 @@ class UserTest extends TestCase
                 'password_c' => 'newpassword',
                 'old_password' => '12345678'
                 ]);
+
         $response->assertStatus(200);
 
-
     }
-
-
 
 
 }

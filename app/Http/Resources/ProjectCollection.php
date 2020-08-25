@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ProjectCollection extends ResourceCollection
 {
+
     /**
      * Transform the resource collection into an array.
      *
@@ -14,7 +15,12 @@ class ProjectCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+
         $data = ProjectResource::collection($this->collection);
+
         return $data;
+
     }
+
+
 }

@@ -25,17 +25,28 @@ class Project extends Model
         'updated_at',
     ];
 
+
+    /**
+     * @param $query
+     * @param ProjectFilter $filters
+     * @return mixed
+     */
     public function scopeFilter($query, ProjectFilter $filters)
     {
+
         return $filters->apply($query);
+
     }
+
 
     /**
      * Проект имеет множество задач
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function tasks() {
+
         return $this->hasMany('App\Models\Task');
+
     }
 
     /**
@@ -44,9 +55,10 @@ class Project extends Model
      */
     public function projects()
     {
-        return $this->belongsTo('App\Models\User', 'project_id');
-    }
 
+        return $this->belongsTo('App\Models\User', 'project_id');
+
+    }
 
 
 }

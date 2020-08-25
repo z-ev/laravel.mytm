@@ -11,6 +11,7 @@ use Laravel\Passport\HasApiTokens;
 
 class Task extends Model
 {
+
     use HasApiTokens;
     use Notifiable;
 
@@ -25,10 +26,19 @@ class Task extends Model
         'updated_at',
     ];
 
+
+    /**
+     * @param $query
+     * @param ProjectFilter $filters
+     * @return mixed
+     */
     public function scopeFilter($query, ProjectFilter $filters)
     {
+
         return $filters->apply($query);
+
     }
+
 
     /**
      * Обратная связь, каждая задача относится к проекту
@@ -36,7 +46,10 @@ class Task extends Model
      */
     public function project()
     {
+
         return $this->belongsTo('App\Models\Project', 'project_id');
+
     }
+
 
 }

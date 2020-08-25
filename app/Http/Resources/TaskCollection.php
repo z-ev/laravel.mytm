@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class TaskCollection extends ResourceCollection
 {
+
     /**
      * Transform the resource collection into an array.
      *
@@ -14,6 +15,9 @@ class TaskCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+
         return TaskResource::collection($this->collection);
+
     }
+
 }

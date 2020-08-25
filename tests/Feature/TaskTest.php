@@ -5,30 +5,34 @@ namespace Tests\Feature;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class TaskTest extends TestCase
 {
+
     use WithFaker;
+
+
     /**
      * Добавление задачи
      */
     public function test_user_can_add_task()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
 
-        $project = factory(Project::class)->create(['user_id'=>$user->id]);
+        $project = factory(Project::class)->create(['user_id' => $user->id]);
 
-        $response = $this->postJson('api/v1/tasks/',[
+        $response = $this->postJson('api/v1/tasks',[
+
             'project_id' => $project->id,
             'title' => 'New Title '.$this->faker->title,
             'body' => 'New bady '.$this->faker->paragraph,
-        ]);
+
+            ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
@@ -70,9 +74,12 @@ class TaskTest extends TestCase
 
     }
 
-
+    /**
+     * Изменяем задачу
+     */
     public function test_user_can_update_task()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -124,8 +131,12 @@ class TaskTest extends TestCase
 
     }
 
+    /**
+     * Удаляем задачу
+     */
     public function test_user_can_destroy_task()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -143,15 +154,18 @@ class TaskTest extends TestCase
 
     }
 
-
-
+    /**
+     * Фильтуем задачи
+     */
     public function test_user_can_tasks_with_filters()
     {
+
         $this->withoutExceptionHandling();
 
         $response = $this->actingAs($user = factory(User::class)->create(), 'api');
 
         $project = factory(Project::class)->create(['user_id' => $user->id]);
+
         $task = factory(Task::class)->create(['user_id' => $user->id, 'project_id' => $project->id]);
 
 
@@ -168,8 +182,12 @@ class TaskTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Смотрим все задачи
+     */
     public function test_user_can_view_all_tasks()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -183,13 +201,19 @@ class TaskTest extends TestCase
 
     }
 
+
+    /**
+     * Смотрим конкретную задачу
+     */
     public function test_user_can_view_task()
     {
+
         $this->withoutExceptionHandling();
 
         $this->actingAs($user = factory(User::class)->create(), 'api');
 
         $project = factory(Project::class)->create(['user_id'=>$user->id]);
+
         $task = factory(task::class)->create(['user_id'=>$user->id , 'project_id' => $project->id]);
 
         $response = $this->getJson('api/v1/tasks');
@@ -197,9 +221,6 @@ class TaskTest extends TestCase
         $response->assertStatus(200);
 
     }
-
-
-
 
 
 }

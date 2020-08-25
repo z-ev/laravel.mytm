@@ -9,8 +9,16 @@ use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 trait ElasticTrait
 {
 
-
-
+    /**
+     * Поиск в elasticsearch
+     *
+     * @param $body
+     * @param $paginate
+     * @param $page
+     * @param $sort
+     * @return mixed
+     * @throws ElasticNoWork
+     */
     protected function search($body, $paginate, $page, $sort)
     {
 
@@ -35,18 +43,23 @@ trait ElasticTrait
 
         ];
 
+        try {
 
-        try {$result = Elasticsearch::search($query);} catch (NoNodesAvailableException $exception) {
+            $result = Elasticsearch::search($query);
+
+        } catch (NoNodesAvailableException $exception) {
+
             throw new ElasticNoWork();
+
         } catch (BadRequest400Exception $exception) {
+
             throw new ElasticNoWork();
+
         }
 
         $result = $result['hits']['hits'];
 
         return $result;
-
-
 
     }
 
@@ -62,13 +75,17 @@ trait ElasticTrait
      */
     protected function indexDelete($index)
     {
-        try {$response = Elasticsearch::indices()->delete(['index' => $index]);} catch (NoNodesAvailableException $exception) {
+        try {
+
+            $response = Elasticsearch::indices()->delete(['index' => $index]);
+
+        } catch (NoNodesAvailableException $exception) {
+
             throw new ElasticNoWork();
         }
 
         return $response;
     }
-
 
 
 }
