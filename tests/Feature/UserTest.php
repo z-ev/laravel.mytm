@@ -147,5 +147,35 @@ class UserTest extends TestCase
     }
 
 
+    public function test_user_can_destroy()
+    {
+        $this->withoutExceptionHandling();
+        $response = $this->actingAs($user = factory(User::class)->create(), 'api');
+        $response = $this->deleteJson(
+            '/api/v1/users/'.$user->id);
+        $response->assertStatus(200);
+
+
+    }
+
+    public function test_user_can_update()
+    {
+        $this->withoutExceptionHandling();
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+        $response = $this->deleteJson(
+            '/api/v1/users/'.$user->id, [
+                'name' => 'MyNewUserName',
+                'email' => 'myNewEmail@thetest.ru',
+                'password' => 'newpassword',
+                'password_c' => 'newpassword',
+                'old_password' => '12345678'
+                ]);
+        $response->assertStatus(200);
+
+
+    }
+
+
+
 
 }

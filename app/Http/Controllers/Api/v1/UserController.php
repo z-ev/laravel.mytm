@@ -8,8 +8,12 @@ use App\Exceptions\UserNotSignUp;
 use App\Filters\ProjectFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SignInRequest;
+use App\Http\Requests\TaskUpdateRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\ProjectResource;
+use App\Http\Resources\TaskResource;
 use App\Http\Resources\UserResource;
+use App\Models\Task;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Http\Requests\SignUpRequest;
@@ -27,7 +31,6 @@ class UserController extends Controller
     CONST HTTP_CREATED = Response::HTTP_CREATED;
     CONST HTTP_OK = Response::HTTP_OK;
     CONST HTTP_UNAUTHORIZED = Response::HTTP_UNAUTHORIZED;
-
 
     /**
      * Регистрация нового пользователя
@@ -210,6 +213,59 @@ class UserController extends Controller
 
         $user = auth()->user();
         return new UserResource($user);
+    }
+
+
+    public function update(UserUpdateRequest $request, User $user)
+    {
+
+        if (!$user) {
+            $error = 'Пользователя с таким id не существует';
+        }
+
+        if ($user->id != auth()->user()->id) {
+            $error = 'У вас нет прав чтобе изменить информацию о пользователе.';
+        }
+
+        if (isset($error)) {
+            return response()->json(['data' => ['error' => $error]], 400);
+        } else {
+
+            request('name') && $user->name = request('name');
+            request('email') && $user->email = request('email');
+
+            $password = request('password');
+            $old_password = request('old_password');
+
+            if (Hash::check($old_password, auth()->User()->password)) {
+
+                $user->update(["password" => Hash::make($password)]);
+            }
+            $user->save;
+
+
+            return new UserResource($user);
+        }
+    }
+    public function destroy(User $user)
+    {
+        if ($user->id != auth()->user()->id) {
+            $error = 'У вас нет прав чтобы удалить пользователя.';
+        }
+
+        if (isset($error)) {
+            return response()->json(['data' => ['error' => $error]], 400);
+        } else {
+            $user->delete();
+            return response()->json([
+                                        'data' => [
+                                            'message' => 'Пользователь удален'
+                                        ],
+                                        'links' => [
+                                            'self' => route('users.index'),
+                                        ]
+                                    ], 200);
+        }
     }
 
 

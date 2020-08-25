@@ -185,6 +185,21 @@ class ProjectTest extends TestCase
             ]);
     }
 
+
+    public function test_user_can_view_all_project()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $project = factory(Project::class)->create(['user_id'=>$user->id]);
+
+        $response = $this->getJson('api/v1/projects/');
+
+        $response->assertStatus(200);
+
+    }
+
     public function test_user_can_projects_with_filters()
     {
         $this->withoutExceptionHandling();
