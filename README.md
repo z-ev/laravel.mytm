@@ -41,11 +41,11 @@
     * [Изменение информации о пользователе ](#patchuserinfo)
     * [Удаление пользователя](#deluserinfo)
     * [Выход из системы (смена токена) ](#sistemsignout)
-* [Проекты ](#projets)
+* [Проекты ](#projetsshow)
     * [Добавление проекта (список задач) ](#addproject)
-    * [Обновление проекта ](#update)
+    * [Обновление проекта ](#updateproject)
     * [Удаление проекта ](#projectdel)
-    * [Информация по задаче ](#projectinfo)
+    * [Информация по проекту ](#projectinfo)
     * [Список проектов](#projectsall)
 * [Задачи ](#tasks)
     * [Добавление задачи ](#addtask)
@@ -54,9 +54,6 @@
     * [Информация по задаче ](#taskinfo)
     * [Список задач](#tasksall)
 * [Фильтры ](#filters)
-    * [Пользователи ](#filterusers)
-    * [Проекты ](#filterprojects)
-    * [Задачи ](#filtertasks)
 * [Поиск (Elasticserch) ](#search)
     * [Индексация документов ](#searchindex)
     * [Поиск с фильтрами ](#elserch)
@@ -67,7 +64,7 @@
 
 **Завершение работы над проектом:** 25.08.2020
 
-**Затраченное время:** 1470 минут = 24,5 часа.
+**Затраченное время:** 1485 минут = 24,5 часа.
  
 | № п./п. | Задачи  | Время выполнения (мин.)|
 | ------------- | ------------- | ------------- |
@@ -82,7 +79,8 @@
 | 9 | Фильтры | 180 |
 | 10 | Поиск и ElasticSearch (индексация/поиск/удаление) | 480 |
 | 11 | Описание проекта в Readme | 120 |
-| 12 | **Итого** | **1470** |
+| 12 | Рефакторинг от 30.08.2020 | 15 |
+| 13 | **Итого** | **1485** |
  
 
 
@@ -217,7 +215,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_update ./tests/Feature/UserTes
 
 
 ### Удаление пользователя <a id="deluserinfo"></a>
-Внимание, удалить можно только своего пользователя, который в данный момент авторизован.
+**Внимание:** удалить можно только в данный момент авторизованного пользователя.
 ```
 DELETE: /api/v1/users/{user_id}
 ```
@@ -247,10 +245,10 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_signout ./tests/Feature/UserTe
     }
 }
 ```
-## Проекты <a id="signup"></a>
+## Проекты <a id="projetsshow"></a>
 | Параметры | Описание |
 | ------------- | ------------- | 
-| title | Название проекта. От 5 до 300 символов (обязательное поле)
+| **title** | Название проекта. От 5 до 300 символов (обязательное поле)
 | body |    Описание проекта. От 10 до 800 символов.
 | deadline | Планируемая дата завершения проекта. Пример: 2020-08-24 16:39:12
 | status | Статус проекта. Доступен только при изменении проекта. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
@@ -263,14 +261,10 @@ POST: /api/v1/projects
 ```
 TEST$ ./vendor/bin/phpunit --filter test_user_can_add_project ./tests/Feature/ProjectTest.php
 ```
-| Параметры | 
-| ------------- | 
-| title | 
-| body |
-| deadline |
+
 ![добавить проект](./public/img/project-add2.png)
 
-### Обновление проекта <a id="signup"></a>
+### Обновление проекта <a id="updateproject"></a>
 ```
 PATCH: /api/v1/projects/{id}
 ```
@@ -279,7 +273,7 @@ PATCH: /api/v1/projects/{id}
 TEST$ ./vendor/bin/phpunit --filter test_user_can_update_project ./tests/Feature/ProjectTest.php
 ```
 
-![обновить проект](./public/img/projects-show.png)
+![обновить проект](./public/img/project-update2.png)
 
 ### Удаление проекта <a id="projectdel"></a>
 ```
@@ -337,8 +331,8 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_project ./tests/Featu
 ### Задачи <a id="tasks"></a>
 | Параметры | Описание |
 | ------------- | ------------- | 
-| project_id | Задачу можно создать только в рамках пректа (списка) (обязательное поле)
-| title | Название проекта. От 5 до 300 символов (обязательное поле)
+| **project_id** | Задачу можно создать только в рамках проекта (списка) (обязательное поле)
+| **title** | Название проекта. От 5 до 300 символов (обязательное поле)
 | body |    Описание проекта. От 10 до 800 символов.
 | deadline | Планируемая дата завершения проекта. Пример: 2020-08-24 16:39:12
 | status | Статус проекта. Доступен только при обновлении задачи. 1 - Проект создан, 2 - Проект выполняется, 3 - Проект остановлен, 4 - проект завершен
@@ -381,8 +375,6 @@ GET: /api/v1/tasks/{task_id}
 TEST$ ./vendor/bin/phpunit --filter test_user_can_view_task ./tests/Feature/TaskTest.php
 ```
 
-![обновить проект](./public/img/projects-show.png)
-
 #### Информация по задачам <a id="tasksall"></a>
 ```
 GET: /api/v1/tasks
@@ -392,8 +384,7 @@ GET: /api/v1/tasks
 TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_tasks ./tests/Feature/TaskTest.php
 ``` 
 
-### Фильтры <a id="filters"></a>
-Индексация документов в Elasticsearch:
+## Фильтры <a id="filters"></a>
 ```
 GET: /api/v1/users
 GET: /api/v1/projects
@@ -423,7 +414,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_tasks_with_filters ./tests/Fea
 ```
 Примeр:
 ```
-http://api.ez:8088/api/v1/users?order_dir=desc&paginate=10&projects=13&tasks=3&id=1011
+http://api.ez:8088/api/v1/users?order_dir=desc&paginate=10&projects=1&tasks=1&id=1011
 ```
 
 ```
@@ -530,7 +521,7 @@ http://api.ez:8088/api/v1/users?order_dir=desc&paginate=10&projects=13&tasks=3&i
 }
 ```
 
-##Поиск (Elasticserch) <a id="search"></a>
+## Поиск (Elasticserch) <a id="search"></a>
 Для работы с Elasticserch необходимо настроить параметры в .env
 ```
 ELASTICSEARCH_HOST=localhost
