@@ -90,8 +90,41 @@
 ```sh
 $ git clone https://github.com/evgeniizab/laravel.mytm.git
 $ cd laravel.mytm
-$ composer install
 ```
+
+### Установка через docker
+```bash
+echo -e "$(cat .env.example)\n$(cat .env.docker)" >> .env \
+&& docker-compose up --build -d
+```
+
+Add string host's file
+
+```
+127.0.0.1 laravel-mytm.loc
+```
+Migrate and Seeding
+
+docker exec -it laravel-mytm_php bash
+php artisan migrate --seed
+
+
+Use
+Docker commands start, stop, restart
+
+docker-compose <command> && docker-compose logs -f
+
+### Stop and remove containers, networks, images, and volumes
+docker-compose down --rmi=all
+
+PHPMYADMIN
+laravel-mytm_mysql
+dev
+dev
+
+
+http://0.0.0.0:8008
+
 ### 2. Настраиваем базу данных
 
 Копируем .env.example в .env

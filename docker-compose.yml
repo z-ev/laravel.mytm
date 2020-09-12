@@ -1,0 +1,132 @@
+version: '3.7'
+
+services:
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: ./docker/services/elasticsearch/Dockerfile
+    image: ${DOCKER_PROJECT_NAME}_elasticsearch
+    container_name: ${DOCKER_PROJECT_NAME}_elasticsearch
+    working_dir: ${DOCKER_PROJECT_PATCH}
+    networks:
+      - net
+    environment:
+    - discovery.type=single-node
+    ports:
+    - '9200:9200'
+    - '9300:9300'
+
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/services/php/Dockerfile
+    image: ${DOCKER_PROJECT_NAME}_php
+    container_name: ${DOCKER_PROJECT_NAME}_php
+    working_dir: ${DOCKER_PROJECT_PATCH}
+    networks:
+      - net
+    volumes:
+      - ${DOCKER_PROJECT_ROOT}:${DOCKER_PROJECT_PATCH}
+      - ./docker/services/php/conf.d/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./docker/scripts/php.sh:/scripts/php.sh
+    command: /scripts/php.sh
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/services/nginx/Dockerfile
+    image: ${DOCKER_PROJECT_NAME}_nginx
+    container_name: ${DOCKER_PROJECT_NAME}_nginx
+    working_dir: ${DOCKER_PROJECT_PATCH}
+    networks:
+      - net
+    ports:
+      - "${DOCKER_NGINX_PORTS}"
+    volumes:
+      - ${DOCKER_PROJECT_ROOT}:${DOCKER_PROJECT_PATCH}
+      - ./docker/services/nginx/conf.d/${DOCKER_NGINX_CONFIG}:/etc/nginx/conf.d/docker.conf.template
+      - ./docker/scripts/nginx.sh:/scripts/nginx.sh
+    environment:
+      - PROJECT_PATCH=${DOCKER_PROJECT_PATCH}
+      - SERVER_NAME=${DOCKER_PROJECT_DOMAIN}
+      - ROOT=${DOCKER_NGINX_ROOT}
+      - CONFIG=${DOCKER_NGINX_CONFIG}
+      - PHP_HOST=${DOCKER_PROJECT_NAME}_php
+    command: /scripts/nginx.sh
+
+  redis:
+    build:
+      context: .
+      dockerfile: ./docker/services/redis/Dockerfile
+    image: ${DOCKER_PROJECT_NAME}_redis
+    container_name: ${DOCKER_PROJECT_NAME}_redis
+    networks:
+      - net
+    ports:
+      - "${DOCKER_REDIS_PORTS}"
+    volumes:
+      - ./docker/scripts/redis.sh:/scripts/redis.sh
+    environment:
+      - PASSWORD=${DOCKER_REDIS_PASSWORD}
+    command: /scripts/redis.sh
+
+  # nodejs:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/services/nodejs/Dockerfile
+  #   image: ${DOCKER_PROJECT_NAME}_nodejs
+  #   container_name: ${DOCKER_PROJECT_NAME}_nodejs
+  #   working_dir: ${DOCKER_PROJECT_PATCH}
+  #   networks:
+  #     - net
+  #   ports:
+  #     - "${DOCKER_NODEJS_PORTS}"
+  #   volumes:
+  #     - ${DOCKER_PROJECT_ROOT}:${DOCKER_PROJECT_PATCH}
+  #     - ./docker/scripts/nodejs.sh:/scripts/nodejs.sh
+  #   environment:
+  #     - ROOT=${DOCKER_NODEJS_ROOT}
+  #     - NPM_COMMAND=${DOCKER_NODEJS_NPM_COMMAND}
+  #   command: /scripts/nodejs.sh
+
+  mysql:
+    build:
+      context: .
+      dockerfile: ./docker/services/mysql/Dockerfile
+    image: ${DOCKER_PROJECT_NAME}_mysql
+    container_name: ${DOCKER_PROJECT_NAME}_mysql
+    networks:
+      - net
+    ports:
+      - "${DOCKER_MYSQL_PORTS}"
+    volumes:
+      - ./docker/services/mysql/conf/custom.cnf:/etc/mysql/custom.cnf
+      - ./docker/services/mysql/var/backups/sql:/var/backups/sql
+      # - ./docker/services/mysql/var/backups/sql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      # - ./docker/services/mysql/var/lib/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DOCKER_PROJECT_NAME}
+      - MYSQL_ROOT_PASSWORD=${DOCKER_MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${DOCKER_MYSQL_USER}
+      - MYSQL_PASSWORD=${DOCKER_MYSQL_PASSWORD}
+
+  phpmyadmin:
+    build:
+      context: .
+      dockerfile: ./docker/services/phpmyadmin/Dockerfile
+    image: ${DOCKER_PROJECT_NAME}_phpmyadmin
+    container_name: ${DOCKER_PROJECT_NAME}_phpmyadmin
+    networks:
+      - net
+    volumes:
+      - ./docker/services/php/conf.d/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    ports:
+      - "${DOCKER_PHPMYADMIN_PORTS}"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=${DOCKER_PROJECT_NAME}_mysql
+      - PMA_ABSOLUTE_URI=${DOCKER_PHPMYADMIN_PMA_ABSOLUTE_URI}
+
+networks:
+  net:
+    driver: bridge
