@@ -19,3 +19,4 @@ yarn-error.log
 # Nginx
 /public/access-nginx.log
 /public/error-nginx.log
+/public/.*

@@ -19,13 +19,15 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class UserController
+ * @package App\Http\Controllers\Api\v1
+ */
 class UserController extends Controller
 {
-
-    CONST HTTP_CREATED = Response::HTTP_CREATED;
-    CONST HTTP_OK = Response::HTTP_OK;
-    CONST HTTP_UNAUTHORIZED = Response::HTTP_UNAUTHORIZED;
-
+    const HTTP_CREATED = Response::HTTP_CREATED;
+    const HTTP_OK = Response::HTTP_OK;
+    const HTTP_UNAUTHORIZED = Response::HTTP_UNAUTHORIZED;
 
     /**
      * Регистрация нового пользователя
@@ -37,35 +39,28 @@ class UserController extends Controller
      * @throws UserIsAlreadyExists
      * @throws UserNotSignUp
      */
-    public function signUp (SignUpRequest $request)
+    public function signUp(SignUpRequest $request)
     {
         $data = $request->all();
-
         $data['password'] = Hash::make($data['password']);
-
         $user = User::where('email', request('email'))->first();
 
-        if ($user) { throw new UserIsAlreadyExists(); }
+        if ($user) {
+            throw new UserIsAlreadyExists();
+        }
 
         try {
-
             $user = User::create($data);
-
         } catch (QueryException $exception) {
-
             throw new UserNotSignUp();
-
         }
 
         $success['name'] =  $user->name;
-
-        $success['token'] = $this->getUserToken($user,"MyToken");
-
+        $success['token'] = $this->getUserToken($user, "MyToken");
         $response =  self::HTTP_CREATED;
 
-        return $this->getResponse( "success", $success, $response , $user->id);
+        return $this->getResponse("success", $success, $response, $user->id);
     }
-
 
     /**
      * Авторизация пользователя
@@ -78,36 +73,24 @@ class UserController extends Controller
     public function signIn(SignInRequest $request)
     {
         $data = $request->all();
-
         $credentials = [
-
             'email' => request('email'),
             'password' => request('password'),
-
         ];
 
         if (auth()->attempt($credentials)) {
-
             $user = Auth::user();
-
             $token['token'] = $this->getUserToken($user, "MyToken");
-
             $response = self::HTTP_OK;
 
             return $this->getResponse("authorized", $token, $response, $user->id);
-
         } else {
-
             $error = "Unauthorized Access";
-
             $response = self::HTTP_UNAUTHORIZED;
 
-            return $this->getResponse( "error", $error, $response);
-
+            return $this->getResponse("error", $error, $response);
         }
-
     }
-
 
     /**
      * Выход из системы
@@ -118,13 +101,15 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws UserNotSignUp
      */
-    public function signOut (Request $request)
+    public function signOut(Request $request)
     {
-            $token = $request->user()->token();
+        $token = $request->user()->token();
 
-            if (isset($token)) { $token->revoke();}
+        if (isset($token)) {
+            $token->revoke();
+        }
 
-            return response()->json([
+        return response()->json([
                 'data' => [
                     'data' => [
                         'message' => 'You are successfully signout'
@@ -133,9 +118,8 @@ class UserController extends Controller
                         'self' => route('users.signout'),
                     ]
                 ]
-            ]);
+        ]);
     }
-
 
     /**
      * Создаем токен
@@ -148,16 +132,11 @@ class UserController extends Controller
     {
 
         if (isset($user)) {
-
             return $user->createToken($token_name)->accessToken;
-
         } else {
-
             return '';
         }
-
     }
-
 
     /**
      *
@@ -169,24 +148,20 @@ class UserController extends Controller
      * @param null $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getResponse(string $status = null, $data = null, $response, $id = null){
-
+    public function getResponse(string $status = null, $data = null, $response, $id = null)
+    {
         if (isset($id)) {
-
             $data = [
                 'data' => [
                     'type' => 'user',
                     'user_id' => $id,
                     'status' => $status,
                     'attributes' => $data,
-
                 ],
                 'links' => [
                     'self' => route('users.show', $id),
                 ]];
-
         } else {
-
             $data = [
                 'data' => [
                     'type' => 'user',
@@ -194,20 +169,19 @@ class UserController extends Controller
                     'attributes' => $data,
                 ]
             ];
-
         }
 
         return response()->json($data, $response);
     }
 
-    public function info() {
-
+    /**
+     * @return UserResource
+     */
+    public function info()
+    {
         $user = auth()->user();
-
         return new UserResource($user);
-
     }
-
 
     /**
      * Информация по всем пользователям
@@ -220,22 +194,16 @@ class UserController extends Controller
      */
     public function index(ProjectFilter $filters)
     {
-
         $paginate = $filters->getPaginate();
 
         try {
-
             $users = User::filter($filters)->paginate($paginate);
-
         } catch (QueryException $exception) {
-
             throw new Filter();
         }
 
         return UserResource::collection($users);
-
     }
-
 
     /**
      * @param $id
@@ -243,24 +211,17 @@ class UserController extends Controller
      */
     public function show($id)
     {
-
         $user = User::findOrfail($id);
-
         return new UserResource($user);
-
     }
-
 
     /**
      * @return UserResource
      */
     public function infoUser()
     {
-
         $user = auth()->user();
-
         return new UserResource($user);
-
     }
 
     /**
@@ -270,44 +231,31 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, User $user)
     {
-
         if (!$user) {
-
             $error = 'Пользователя с таким id не существует';
         }
 
         if ($user->id != auth()->user()->id) {
-
             $error = 'У вас нет прав чтобе изменить информацию о пользователе.';
-
         }
 
         if (isset($error)) {
-
             return response()->json(['data' => ['error' => $error]], 400);
-
         } else {
-
             request('name') && $user->name = request('name');
-
             request('email') && $user->email = request('email');
-
             $password = request('password');
-
             $old_password = request('old_password');
 
             if (Hash::check($old_password, auth()->User()->password)) {
-
                 $user->update(["password" => Hash::make($password)]);
             }
 
             $user->save;
 
             return new UserResource($user);
-
         }
     }
-
 
     /**
      * @param User $user
@@ -316,22 +264,15 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-
         if ($user->id != auth()->user()->id) {
-
             $error = 'У вас нет прав чтобы удалить пользователя.';
-
         }
 
         if (isset($error)) {
-
             return response()->json(['data' => ['error' => $error]], 400);
-
         } else {
-
             $user->delete();
             return response()->json([
-
                 'data' => [
                 'message' => 'Пользователь удален'
                 ],
@@ -340,10 +281,6 @@ class UserController extends Controller
                 ]
 
             ], 200);
-
         }
-
     }
-
-
 }

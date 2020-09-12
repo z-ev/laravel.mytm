@@ -14,12 +14,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
-
+/**
+ * Class SearchController
+ * @package App\Http\Controllers\Api\v1
+ */
 class SearchController extends Controller
 {
-
     use ElasticTrait;
-
 
     /**
      * Поиск в Elasticsearch по ключевому слову
@@ -33,34 +34,35 @@ class SearchController extends Controller
     public function find(Request $request)
     {
         $word = request('ser');
-
         $paginate = request('paginate');
-
         $page = request('page');
-
         $by = request('order_by');
-
         $order = request('order_dir');
 
-        if (!$by) {$sort['col']  = '_id';} else {$sort['col'] = $by;}
+        if (!$by) {
+            $sort['col']  = '_id';
+        } else {
+            $sort['col'] = $by;
+        }
 
-        if (!$order) {$sort['type']  = 'asc';} else { $sort['type'] = $order;}
+        if (!$order) {
+            $sort['type']  = 'asc';
+        } else {
+            $sort['type'] = $order;
+        }
 
-        if (!$paginate) {$paginate = 5;}
+        if (!$paginate) {
+            $paginate = 5;
+        }
 
         isset($page) ?: $page = 1;
 
         if (isset($word)) {
-
             $result = $this->paginate($this->search($word, $paginate, $page, $sort), $paginate, $page, route('search'));
 
             return $result;
-
         }
-
-
     }
-
 
     /**
      * Пагинация для ответов от Elasticsearch
@@ -74,21 +76,15 @@ class SearchController extends Controller
      */
     public function paginate($items, $perPage = 5, $page = null, $baseUrl = null, $options = [])
     {
-
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-
         $items = $items instanceof Collection ? $items : Collection::make($items);
-
         $lap = new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
 
         if ($baseUrl) {
-
             $lap->setPath($baseUrl);
-
         }
 
         return $lap;
-
     }
 
     /**
@@ -99,14 +95,11 @@ class SearchController extends Controller
      * @return mixed
      * @throws \App\Exceptions\ElasticNoWork
      */
-    public function deleteIndex() {
-
+    public function deleteIndex()
+    {
         $this->indexDelete('project');
-
         return $this->indexDelete('task');
-
     }
-
 
     /**
      * Создаем индексы документов в Elasticsearch
@@ -118,17 +111,13 @@ class SearchController extends Controller
      */
     public function createIndex()
     {
-
-        $projects = Project::where('user_id', '>',0)->get();
+        $projects = Project::where('user_id', '>', 0)->get();
 
         foreach ($projects as $project) {
-
             $params = [
-
                 'index' => 'project',
                 'type' => 'text',
                 'id' => $project['id'],
-
                 'body'  => ['title' => $project['title'],
                             'body'=>$project['body'],
                             'user_id'=>$project['user_id'],
@@ -137,26 +126,21 @@ class SearchController extends Controller
                             'created_at' => $project['created_at'],
                             'updated_at' => $project['updated_at'],
                             'links' => [
-                                'self' => route('projects.show',$project['id']),
+                                'self' => route('projects.show', $project['id']),
                                 ]
                             ],
                 ];
 
             try {
-
                 $response = Elasticsearch::index($params);
-
             } catch (NoNodesAvailableException $exception) {
-
                 throw new ElasticNoWork();
             }
+        }
 
-         }
-
-        $tasks = Task::where('user_id', '>',0)->get();
+        $tasks = Task::where('user_id', '>', 0)->get();
 
         foreach ($tasks as $task) {
-
             $params = [
                 'index' => 'task',
                 'type' => 'text',
@@ -170,23 +154,17 @@ class SearchController extends Controller
                     'created_at' => $task['created_at'],
                     'updated_at' => $task['updated_at'],
                     'links' => [
-                                'self' => route('tasks.show',$task['id']),
+                                'self' => route('tasks.show', $task['id']),
                             ]
                 ],
             ];
 
             try {
-
                 $response = Elasticsearch::index($params);
-
             } catch (NoNodesAvailableException $exception) {
-
                 throw new ElasticNoWork();
-
             }
-
         }
         return $response;
-
     }
 }
