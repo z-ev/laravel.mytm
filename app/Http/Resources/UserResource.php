@@ -4,6 +4,10 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Class UserResource
+ * @package App\Http\Resources
+ */
 class UserResource extends JsonResource
 {
     /**
@@ -14,9 +18,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
-
             'data' => [
                 'type' => 'users',
                 'id' => $this->id,
@@ -26,15 +28,10 @@ class UserResource extends JsonResource
                     'projects' => ProjectResource::collection($this->whenLoaded('projects')),
                     'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
                 ],
-
             ],
             'links' => [
                 'self' => route('users.show', $this->id),
             ]
-
         ];
-
     }
-
-
 }
