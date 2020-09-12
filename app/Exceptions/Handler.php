@@ -7,6 +7,10 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
+/**
+ * Class Handler
+ * @package App\Exceptions
+ */
 class Handler extends ExceptionHandler
 {
     /**
@@ -31,10 +35,11 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Throwable  $exception
+     * @param \Throwable $exception
      * @return void
      *
      * @throws \Exception
+     * @throws Throwable
      */
     public function report(Throwable $exception)
     {
@@ -54,27 +59,23 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof ValidationException) {
             return response()->json([
-
                 'data' => [
                 'errors' => [
                 'code' => 422,
                 'title' => 'Bad request.',
                 'detail' => $exception->validator->errors()
-
                 ]
-             ]], 422);
+                ]], 422);
         }
 
         if ($exception instanceof ErrorException) {
             return response()->json([
-
                 'data' => [
                 'errors' => [
                 'code' => 422,
                 'title' => 'Bad request.',
-
                 ]
-            ]], 422);
+                ]], 422);
         }
 
         return parent::render($request, $exception);
