@@ -17,5 +17,9 @@
         "resolve-url-loader": "^3.1.0",
         "sass": "^1.15.2",
         "sass-loader": "^8.0.0"
-    }
+    },
+    "dependencies": {
+        "cz-conventional-changelog": "^3.3.0"
+    },
+    "version": "1.1.0"
 }
