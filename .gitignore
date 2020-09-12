@@ -16,3 +16,7 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+# Nginx
+/public/access-nginx.log
+/public/error-nginx.log
+/public/.*

@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-
+/**
+ * Class Project
+ * @package App\Models
+ */
 class Project extends Model
 {
-
     use HasApiTokens;
     use Notifiable;
 
@@ -25,7 +27,6 @@ class Project extends Model
         'updated_at',
     ];
 
-
     /**
      * @param $query
      * @param ProjectFilter $filters
@@ -33,20 +34,16 @@ class Project extends Model
      */
     public function scopeFilter($query, ProjectFilter $filters)
     {
-
         return $filters->apply($query);
-
     }
-
 
     /**
      * Проект имеет множество задач
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function tasks() {
-
+    public function tasks()
+    {
         return $this->hasMany('App\Models\Task');
-
     }
 
     /**
@@ -55,10 +52,6 @@ class Project extends Model
      */
     public function projects()
     {
-
         return $this->belongsTo('App\Models\User', 'project_id');
-
     }
-
-
 }

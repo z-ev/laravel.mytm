@@ -4,9 +4,12 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Class ProjectResource
+ * @package App\Http\Resources
+ */
 class ProjectResource extends JsonResource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -15,9 +18,7 @@ class ProjectResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
-
             'data' => [
                 'type' => 'project',
                 'id' => $this->id,
@@ -45,10 +46,6 @@ class ProjectResource extends JsonResource
                     'self' => route('projects.show', $this->id),
                 ]
             ]
-
         ];
-
     }
-
-
 }

@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class SignInRequest
+ * @package App\Http\Requests
+ */
 class SignInRequest extends FormRequest
 {
     /**
@@ -13,9 +17,7 @@ class SignInRequest extends FormRequest
      */
     public function authorize()
     {
-
         return true;
-
     }
 
     /**
@@ -25,13 +27,9 @@ class SignInRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
-
             'email' => 'required|email',
             'password' => 'required',
-
         ];
-
     }
 }

@@ -80,9 +80,9 @@
 | 10 | Поиск и ElasticSearch (индексация/поиск/удаление) | 480 |
 | 11 | Описание проекта в Readme | 120 |
 | 12 | Рефакторинг от 30.08.2020 | 15 |
-| 13 | **Итого** | **1485** |
+| 14 | **Итого** | **1485** |
  
-
+**Все дальнейшие изменения Вы можете просматривать в [Файле изменений](CHANGELOG.md)**
 
 ## Установка и настройка <a id="setup"></a>
 
@@ -92,84 +92,43 @@ $ git clone https://github.com/evgeniizab/laravel.mytm.git
 $ cd laravel.mytm
 ```
 
-### Установка через docker
+### 2. Установка через docker-compose
 ```bash
 echo -e "$(cat .env.example)\n$(cat .env.docker)" >> .env \
 && docker-compose up --build -d
 ```
 
-Add string host's file
-
+Добавление записи в файле хостов
+/etc/hosts
 ```
 127.0.0.1 laravel-mytm.loc
 ```
-Migrate and Seeding
 
-docker exec -it laravel-mytm_php bash
-php artisan migrate --seed
-
-
-Use
-Docker commands start, stop, restart
-
-docker-compose <command> && docker-compose logs -f
-
-### Stop and remove containers, networks, images, and volumes
+Остановка и удаление контейнеров
+```
 docker-compose down --rmi=all
-
-PHPMYADMIN
-laravel-mytm_mysql
-dev
-dev
-
-
-http://0.0.0.0:8008
-
-### 2. Настраиваем базу данных
-
-Копируем .env.example в .env
-```sh
-$ cp .env.example .env
 ```
-Редактируем .env
-```sh
-DB_CONNECTION=mysql
-DB_HOST=XXXX
-DB_PORT=3306
-DB_DATABASE=XXXX
-DB_USERNAME=XXXX
-DB_PASSWORD=XXXX
-
-ELASTICSEARCH_HOST=localhost
-ELASTICSEARCH_PORT=9200
-```
-Создаем таблицы в БД
-```sh
-$ php artisan migrate
-```
-Генерируем ключ
-```sh
-$ php artisan key:generate
-```
-Подготавливаем passport
-```sh
-$ php artisan passport:install
-```
-
 
 ## 3. Тестирование (23 теста) <a id="test"></a>
 ```
+$ docker exec -it laravel-mytm_php bash
 $ ./vendor/bin/phpunit 
 ```
 
-## 4. Работа с приложением через Postman <a id="work"></a>
-Для начала работы необходимо обнулить базу и выполнить следующие команды:
+## 4. Перед началом работы  <a id="work"></a>
+**Внимание:** Если вы не запускали тесты то данный пукнт можно пропустить.
+После выполнения тестов рекомендуем обнулить базу и заново создать миграции. 
+Для этого необходимо выполнить следующие команды:
 ```
+$ docker exec -it laravel-mytm_php bash
 $ php artisan db:wipe
 $ php artisan migrate --seed
 $ php artisan passport:install
 ```
+# Работа с приложением
+**URL приложения: http://laravel-mytm.loc**
 
+[PostManCollection](https://documenter.getpostman.com/view/12705062/TVK5dhLj) для тестирования (в разработке)
 ## Пользователи <a id="users"></a>
 ### Регистрация пользователя <a id="signup"></a>
 | Параметры | 
@@ -321,7 +280,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_destroy_project ./tests/Featur
 
 ### Удаление проекта вместе с задачами <a id="projectkill"></a>
 ```
-POST: /api/v1/projects/{id}/kill
+DELETE: /api/v1/projects/{id}/kill
 ```
 Тестирование:
 ```
@@ -372,7 +331,7 @@ TEST$ ./vendor/bin/phpunit --filter test_user_can_view_all_project ./tests/Featu
 
 ### Добавление задачи <a id="addtask"></a>
 ```
-POST: /api/v1/tasks/{id}
+POST: /api/v1/tasks
 ```
 Тестирование:
 ```
