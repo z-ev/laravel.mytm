@@ -1,14 +1,18 @@
 <?php
 
 namespace App\Traits;
+
 use App\Exceptions\ElasticNoWork;
 use Elasticsearch;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 
+/**
+ * Trait ElasticTrait
+ * @package App\Traits
+ */
 trait ElasticTrait
 {
-
     /**
      * Поиск в elasticsearch
      *
@@ -21,9 +25,7 @@ trait ElasticTrait
      */
     protected function search($body, $paginate, $page, $sort)
     {
-
         $query = [
-
             'body'  => [
                 "sort" => [ $sort['col'] => ["order" => $sort['type']]],
                 'query'=> [
@@ -40,29 +42,20 @@ trait ElasticTrait
                         "analyzer" => "russian"
                     ]]
             ],
-
         ];
 
         try {
-
             $result = Elasticsearch::search($query);
-
         } catch (NoNodesAvailableException $exception) {
-
             throw new ElasticNoWork();
-
         } catch (BadRequest400Exception $exception) {
-
             throw new ElasticNoWork();
-
         }
 
         $result = $result['hits']['hits'];
 
         return $result;
-
     }
-
 
     /**
      * Удаляем индексацию
@@ -76,16 +69,11 @@ trait ElasticTrait
     protected function indexDelete($index)
     {
         try {
-
             $response = Elasticsearch::indices()->delete(['index' => $index]);
-
         } catch (NoNodesAvailableException $exception) {
-
             throw new ElasticNoWork();
         }
 
         return $response;
     }
-
-
 }
