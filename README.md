@@ -111,7 +111,7 @@ docker-compose down --rmi=all
 
 ## 3. Тестирование (23 теста) <a id="test"></a>
 ```
-$ docker exec -it laravel-mytm_php bash
+$ docker-compose exec php bash
 $ ./vendor/bin/phpunit 
 ```
 
@@ -120,7 +120,7 @@ $ ./vendor/bin/phpunit
 После выполнения тестов рекомендуем обнулить базу и заново создать миграции. 
 Для этого необходимо выполнить следующие команды:
 ```
-$ docker exec -it laravel-mytm_php bash
+$ docker-compose exec php bash
 $ php artisan db:wipe
 $ php artisan migrate --seed
 $ php artisan passport:install
